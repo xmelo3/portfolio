@@ -1,0 +1,28 @@
+---
+import { Image } from 'astro:assets';
+import heroImage from '../assets/hero/hero.jpg';
+---
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-photo tile">
+      <Image
+        src={heroImage}
+        alt="Pohľad cez stĺporadie do átria"
+        widths={[800, 1200, 1800, 2400]}
+        sizes="(max-width: 1440px) 100vw, 1280px"
+        class="hero-image"
+      />
+      <span class="tile-caption">04 — Chodba</span>
+    </div>
+
+    <aside class="hero-overlap">
+      <span class="eyebrow">O portfóliu</span>
+      <h2 style="margin:0;font-size:24px;font-weight:500;line-height:1.22;letter-spacing:-0.01em;">
+        Architektonické portfólio z rokov 2025 - dnes.
+      </h2>
+      <p class="hero-sub">
+        Štúdie priestoru, materiálu a mierky.
+      </p>
+    </aside>
+  </div>
+</section>

@@ -1,0 +1,111 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+
+const allProjects = await getCollection('projects');
+allProjects.sort((a, b) => a.data.order - b.data.order);
+
+const total = allProjects.length;
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+<section id="projekty" class="projects">
+  <div class="projects-head">
+    <div class="left">
+      <h2 class="section-title">
+        Práce <span style="color:var(--muted);font-style:italic;font-weight:300;"> / projekty</span>
+      </h2>
+    </div>
+    <div class="projects-controls">
+      <button class="scroll-btn" id="prev" aria-label="Predchádzajúci">←</button>
+      <button class="scroll-btn" id="next" aria-label="Ďalší">→</button>
+    </div>
+  </div>
+
+  <div class="rail-wrap">
+    <div class="rail" id="rail" style="margin: 0px 0px 0px 100px">
+        {allProjects.map((project) => (
+          <a href={`/projects/${project.id}`} class="card-link">
+            <article class="card">
+              <div class="tile">
+                  <Image
+                    src={project.data.cover}
+                    alt={project.data.title}
+                    widths={[420, 840]}
+                    sizes="(max-width: 768px) 100vw, 420px"
+                    class="tile-image"
+                  />
+              </div>
+              <div class="card-meta">
+                <h3>{project.data.title}</h3>
+                <span class="num">{pad(project.data.order)} / {pad(total)}</span>
+              </div>
+              <div class="card-tags">
+                <span>{project.data.rocnik}</span>
+                <span class="dot"></span>
+                <span>{project.data.semester}</span>
+              </div>
+            </article>
+          </a>
+        ))}
+        <div style="flex:0 0 var(--pad);"></div>
+    </div>
+    <div class="rail-fade-r"></div>
+  </div>
+
+  <div class="progress">
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <span class="progress-label" id="progress-label">01 — {pad(total)}</span>
+  </div>
+</section>
+
+<script>
+  // Horizontal scroller — arrow buttons + progress bar
+  const rail = document.getElementById('rail') as HTMLDivElement | null;
+  const prev = document.getElementById('prev') as HTMLButtonElement | null;
+  const next = document.getElementById('next') as HTMLButtonElement | null;
+  const fill = document.getElementById('progress-fill') as HTMLDivElement | null;
+  const label = document.getElementById('progress-label') as HTMLSpanElement | null;
+
+  if (rail && prev && next && fill && label) {
+    const totalCards = rail.querySelectorAll('.card').length;
+
+    const stepFor = () => {
+      const card = rail.querySelector('.card') as HTMLElement | null;
+      if (!card) return 480;
+      const gap = parseFloat(getComputedStyle(rail).columnGap || '28');
+      return card.getBoundingClientRect().width + gap;
+    };
+
+    function updateUI() {
+      if (!rail || !fill || !label || !prev || !next) return;
+      const max = rail.scrollWidth - rail.clientWidth;
+      const pct = max <= 0 ? 100 : (rail.scrollLeft / max) * 100;
+      fill.style.width = Math.max(8, pct + 12) + '%';
+      const idx = Math.min(totalCards, Math.round(rail.scrollLeft / stepFor()) + 1);
+      label.textContent =
+        String(idx).padStart(2, '0') + ' — ' + String(totalCards).padStart(2, '0');
+      prev.style.opacity = rail.scrollLeft <= 2 ? '0.4' : '1';
+      next.style.opacity = rail.scrollLeft >= max - 2 ? '0.4' : '1';
+    }
+
+    prev.addEventListener('click', () =>
+      rail.scrollBy({ left: -stepFor(), behavior: 'smooth' })
+    );
+    next.addEventListener('click', () =>
+      rail.scrollBy({ left: stepFor(), behavior: 'smooth' })
+    );
+
+    rail.addEventListener('scroll', updateUI, { passive: true });
+    window.addEventListener('resize', updateUI);
+    updateUI();
+
+    document.addEventListener('keydown', (e) => {
+      const t = e.target as HTMLElement;
+      if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA') return;
+      if (e.key === 'ArrowLeft') prev.click();
+      if (e.key === 'ArrowRight') next.click();
+    });
+  }
+</script>
