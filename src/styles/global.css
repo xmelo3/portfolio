@@ -447,79 +447,6 @@ a { color: inherit; text-decoration: none; }
   outline-offset: 4px;
 }
 
-/* ─── project detail page ─── */
-.project-detail {
-  background: linear-gradient(180deg,
-    var(--bg) 0%,
-    var(--bg) 55%,
-    #e4e4e2 68%,
-    #b8b8b6 78%,
-    #6e6e6e 87%,
-    #383838 94%,
-    var(--near-black) 100%);
-  padding: 64px 0 700px;
-}
-.project-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 var(--pad);
-}
-.back-link {
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted);
-  display: inline-block;
-  margin-bottom: 56px;
-}
-.back-link:hover { color: var(--ink); }
-
-.project-header { margin-bottom: 48px; }
-.project-title {
-  margin: 16px 0 20px;
-  font-size: 56px;
-  line-height: 0.95;
-  letter-spacing: -0.03em;
-  font-weight: 400;
-}
-.project-meta {
-  display: flex; gap: 12px; align-items: center;
-  font-size: 14px; color: var(--muted);
-}
-.project-meta .dot {
-  width: 3px; height: 3px; border-radius: 999px;
-  background: var(--muted-2);
-}
-
-.project-lead {
-  font-size: 22px;
-  line-height: 1.45;
-  letter-spacing: -0.01em;
-  color: var(--ink-2);
-  max-width: 60ch;
-  margin: 0 0 56px;
-}
-
-.project-body {
-  max-width: 65ch;
-  font-size: 17px;
-  line-height: 1.7;
-  color: var(--ink-2);
-}
-.project-body p { margin: 0 0 1.2em; }
-.project-body h2 {
-  font-size: 28px;
-  font-weight: 500;
-  letter-spacing: -0.015em;
-  margin: 56px 0 16px;
-}
-.project-body h3 {
-  font-size: 20px;
-  font-weight: 500;
-  margin: 40px 0 12px;
-}
-
 /* tile images fill the dark tile container */
 .tile-image {
   position: absolute;
@@ -543,36 +470,6 @@ a { color: inherit; text-decoration: none; }
   height: 100%;
   object-fit: cover;
   display: block;
-}
-
-/* gallery on detail page — clickable grid with lightbox */
-.project-gallery {
-  margin-top: 80px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-.gallery-item {
-  margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  cursor: zoom-in;
-  background: transparent;
-  /* no aspect-ratio, no padding — tile hugs the image */
-}
-.gallery-item img {
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  max-height: 420px;        /* ← controls image size; tweak this number */
-  object-fit: contain;
-  display: block;
-  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-.gallery-item:hover img {
-  transform: scale(1.03);
 }
 
 @media (max-width: 768px) {
@@ -613,3 +510,236 @@ a { color: inherit; text-decoration: none; }
   color: rgba(0, 0, 0, 0.5);  /* dark text now, since bg is light */
 }
 
+.about-portrait {
+  position: relative;
+  overflow: hidden;
+  max-width: 70%;        /* 30% smaller */
+  aspect-ratio: 3 / 4;   /* keeps the shape consistent */
+  margin-left: auto;     /* keeps it aligned to the right */
+}
+
+.portrait-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.model-viewer-wrap {
+  margin-top: 4rem;
+}
+
+.model-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+model-viewer {
+  width: 60%;
+  display: block;
+  margin: 0 auto;
+  height: 500px;
+  --progress-bar-color: transparent;
+}
+
+/* ─── project detail page ─── */
+.project-detail {
+  min-height: 100vh;
+}
+
+.project-layout {
+  display: flex;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+/* side index */
+.side-index {
+  width: 72px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 76px; /* height of your header */
+  height: calc(100vh - 76px);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.side-index .back-link {
+  font-size: 1.4rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  margin-bottom: 1rem;
+  font-family: var(--serif);
+  font-weight: 300;
+}
+.side-index .back-link:hover { color: var(--ink);}
+
+.index-nav {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+}
+
+.index-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  position: relative;
+  transition: background 0.2s;
+  padding: 0.5rem 0;
+}
+
+.index-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--ink);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.index-item.active::before { opacity: 1; }
+
+.index-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.index-item.active .index-label,
+.index-item:hover .index-label { color: var(--ink); }
+
+.index-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--muted);
+  opacity: 0.4;
+  transition: opacity 0.2s, background 0.2s;
+}
+.index-item.active .index-dot {
+  background: var(--ink);
+  opacity: 1;
+}
+
+/* main content */
+.project-content {
+  flex: 1;
+  padding: 4rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+  max-width: calc(100% - 72px);
+}
+
+.project-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0;
+}
+
+.project-title {
+  margin: 8px 0 4px;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-family: var(--mono);
+  letter-spacing: 0.1em;
+}
+.meta-sep { opacity: 0.4; }
+
+.project-body {
+  margin-top: 1rem;
+  max-width: 560px;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--ink-2);
+}
+
+/* drawing sections */
+.drawing-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color:rgb(0, 0, 0);
+  opacity: 0.8;
+  margin-left: 40px;
+}
+
+.gallery-item {
+  width: 70%;
+  display: block;
+  cursor: zoom-in;
+  margin: 0 auto;
+}
+
+.drawing-img {
+  width: 70%;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+}
+
+/* 3D model */
+model-viewer {
+  width: 60%;
+  height: 500px;
+  display: block;
+  margin: 0 auto;
+  --progress-bar-color: transparent;
+}
+
+/* portrait */
+.about-portrait {
+  position: relative;
+  overflow: hidden;
+  max-width: 70%;
+  aspect-ratio: 3 / 4;
+  margin-left: auto;
+}
+.portrait-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}

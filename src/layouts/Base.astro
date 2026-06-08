@@ -5,7 +5,7 @@ interface Props {
 const { title = 'Portfolio — architektúra' } = Astro.props;
 
 import '../styles/global.css';
-import Analytics from '@vercel/analytics/astro';
+//import Analytics from '@vercel/analytics/astro';
 ---
 <!doctype html>
 <html lang="sk">
@@ -19,7 +19,6 @@ import Analytics from '@vercel/analytics/astro';
       href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <Analytics />
   </head>
   <body>
     <slot />

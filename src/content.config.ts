@@ -13,6 +13,7 @@ const projects = defineCollection({
     pôdorys: image().optional(),
     rez: image().optional(),
     axonometria: image().optional(),
+    model: z.string().optional(),
   }),
 });
 

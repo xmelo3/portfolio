@@ -4,6 +4,8 @@ import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import '../../styles/global.css';
+
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -18,37 +20,67 @@ const { Content } = await render(project);
 const pad = (n: number) => String(n).padStart(2, '0');
 
 const drawings = [
-  { label: 'Rez',        img: project.data.rez },
-  { label: 'Axonometria',img: project.data.axonometria },
-  { label: 'Pôdorys',    img: project.data.pôdorys },
-  { label: 'Plagát',     img: project.data.plagát },
-].filter((d): d is { label: string; img: NonNullable<typeof d.img> } => d.img != null);
+  { label: 'Plagát',      id: 'plagat',     img: project.data.plagát },
+  { label: 'Rez',         id: 'rez',        img: project.data.rez },
+  { label: 'Pôdorys',     id: 'podorys',    img: project.data.pôdorys },
+  { label: 'Axonometria', id: 'axonometria',img: project.data.axonometria },
+].filter((d): d is { label: string; id: string; img: NonNullable<typeof d.img> } => d.img != null);
+
+const hasModel = !!project.data.model;
 ---
 
 <Base title={`${project.data.title} — portfolio`}>
   <Header />
 
   <main class="project-detail">
-    <div class="project-inner">
-      <a href="/#projekty" class="back-link">← Späť na projekty</a>
+    <div class="project-layout">
 
-      <header class="project-header">
-        <span class="eyebrow">Projekt {pad(project.data.order)}</span>
-        <h1 class="project-title">{project.data.title}</h1>
-      </header>
+      <!-- sticky side index -->
+      <aside class="side-index">
+        <a href="/#projekty" class="back-link">←</a>
+        <nav class="index-nav">
+          <a href="#popis" class="index-item" data-section="popis">
+            <span class="index-label">Popis</span>
+            <span class="index-dot"></span>
+          </a>
+          {drawings.map(d => (
+            <a href={`#${d.id}`} class="index-item" data-section={d.id}>
+              <span class="index-label">{d.label}</span>
+              <span class="index-dot"></span>
+            </a>
+          ))}
+          {hasModel && (
+            <a href="#model" class="index-item" data-section="model">
+              <span class="index-label">3D model</span>
+              <span class="index-dot"></span>
+            </a>
+          )}
+        </nav>
+      </aside>
 
-      <div class="project-body">
-        <Content />
-      </div>
+      <!-- main content -->
+      <div class="project-content">
 
-      {drawings.length > 0 && (
-        <div class="project-gallery" id="lightbox-gallery">
-          {drawings.map((drawing, i) => (
+        <header class="project-header" id="popis">
+          <span class="eyebrow">Projekt {pad(project.data.order)}</span>
+          <h1 class="project-title">{project.data.title}</h1>
+          <div class="meta-row">
+            <span class="meta-item">{project.data.rocnik}</span>
+            <span class="meta-sep">·</span>
+            <span class="meta-item">{project.data.semester}</span>
+          </div>
+          <div class="project-body">
+            <Content />
+          </div>
+        </header>
+
+        {drawings.map((drawing, i) => (
+          <section class="drawing-section" id={drawing.id}>
+            <span class="section-label">{drawing.label}</span>
             <a
               href={drawing.img.src}
               data-pswp-width={drawing.img.width}
               data-pswp-height={drawing.img.height}
-              data-label={drawing.label}
               class="gallery-item"
               target="_blank"
               rel="noreferrer"
@@ -56,29 +88,68 @@ const drawings = [
               <Image
                 src={drawing.img}
                 alt={`${project.data.title} — ${drawing.label}`}
-                width={800}
+                width={1200}
                 loading={i === 0 ? 'eager' : 'lazy'}
                 decoding="async"
-                class="gallery-thumb"
+                class="drawing-img"
               />
             </a>
-          ))}
-        </div>
-      )}
+          </section>
+        ))}
+
+        {hasModel && (
+          <section class="drawing-section" id="model">
+            <span class="section-label">3D model</span>
+            <model-viewer
+              src={project.data.model}
+              auto-rotate
+              auto-rotate-delay="0"
+              rotation-per-second="10deg"
+              camera-controls
+              disable-pan
+              shadow-intensity="1"
+              exposure="0.4"
+              environment-image="neutral"
+            ></model-viewer>
+          </section>
+        )}
+
+      </div>
     </div>
   </main>
 
   <Footer />
 </Base>
 
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
 <script>
   import PhotoSwipeLightbox from 'photoswipe/lightbox';
   import 'photoswipe/style.css';
 
   const lightbox = new PhotoSwipeLightbox({
-    gallery: '#lightbox-gallery',
-    children: 'a',
+    gallery: '.project-content',
+    children: 'a.gallery-item',
     pswpModule: () => import('photoswipe'),
   });
   lightbox.init();
+
+  // active section highlight via IntersectionObserver
+  const sections = document.querySelectorAll('[id]');
+  const navItems = document.querySelectorAll('.index-item');
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navItems.forEach(item => item.classList.remove('active'));
+          const active = document.querySelector(`.index-item[data-section="${entry.target.id}"]`);
+          if (active) active.classList.add('active');
+        }
+      });
+    },
+    { threshold: 0.3 }
+  );
+
+  sections.forEach(s => observer.observe(s));
 </script>
