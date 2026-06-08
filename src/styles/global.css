@@ -184,7 +184,6 @@ a { color: inherit; text-decoration: none; }
 }
 .hero-inner {
   max-width: 1440px; margin: 0 auto;
-  padding: 0 var(--pad);
   position: relative;
 }
 .hero-meta {
@@ -711,7 +710,7 @@ model-viewer {
 }
 
 .drawing-img {
-  width: 70%;
+  width: 100%;
   height: auto;
   margin: 0 auto;
   display: block;
