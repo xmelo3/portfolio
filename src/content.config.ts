@@ -9,8 +9,10 @@ const projects = defineCollection({
     rocnik: z.string(),
     semester: z.string(),
     caption: z.string().optional(),
-    cover: image(),
-    gallery: z.array(image()).default([]),
+    plagát: image(),
+    pôdorys: image().optional(),
+    rez: image().optional(),
+    axonometria: image().optional(),
   }),
 });
 

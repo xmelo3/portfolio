@@ -7,8 +7,6 @@ import Footer from '../../components/Footer.astro';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
-  console.log('STATIC PATHS — projects found:', projects.length);
-  console.log('IDs:', projects.map(p => p.id));
   return projects.map((project) => ({
     params: { slug: project.id },
     props: { project },
@@ -18,7 +16,15 @@ export async function getStaticPaths() {
 const { project } = Astro.props;
 const { Content } = await render(project);
 const pad = (n: number) => String(n).padStart(2, '0');
+
+const drawings = [
+  { label: 'Rez',        img: project.data.rez },
+  { label: 'Axonometria',img: project.data.axonometria },
+  { label: 'Pôdorys',    img: project.data.pôdorys },
+  { label: 'Plagát',     img: project.data.plagát },
+].filter((d): d is { label: string; img: NonNullable<typeof d.img> } => d.img != null);
 ---
+
 <Base title={`${project.data.title} — portfolio`}>
   <Header />
 
@@ -30,34 +36,33 @@ const pad = (n: number) => String(n).padStart(2, '0');
         <span class="eyebrow">Projekt {pad(project.data.order)}</span>
         <h1 class="project-title">{project.data.title}</h1>
       </header>
-      
+
       <div class="project-body">
         <Content />
       </div>
 
-      {project.data.gallery.length > 0 && (
+      {drawings.length > 0 && (
         <div class="project-gallery" id="lightbox-gallery">
-          {project.data.gallery.map(async (img, i) => {
-            const { getImage } = await import('astro:assets');
-            const thumb = await getImage({ src: img, width: 800 });
-            const full = await getImage({ src: img, width: 2000 });
-            return (
-              <a
-                href={full.src}
-                data-pswp-width={full.attributes.width || 2000}
-                data-pswp-height={full.attributes.height || 1500}
-                class="gallery-item"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <img
-                  src={thumb.src}
-                  alt={`${project.data.title} — ${i + 1}`}
-                  loading="lazy"
-                />
-              </a>
-            );
-          })}
+          {drawings.map((drawing, i) => (
+            <a
+              href={drawing.img.src}
+              data-pswp-width={drawing.img.width}
+              data-pswp-height={drawing.img.height}
+              data-label={drawing.label}
+              class="gallery-item"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Image
+                src={drawing.img}
+                alt={`${project.data.title} — ${drawing.label}`}
+                width={800}
+                loading={i === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+                class="gallery-thumb"
+              />
+            </a>
+          ))}
         </div>
       )}
     </div>
